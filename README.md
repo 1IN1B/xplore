@@ -1,36 +1,112 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Xplore - Talk to Strangers
+
+A minimalist, anonymous video and text chat application — an Omegle-inspired clone built with Next.js, WebRTC, and Socket.io.
+
+## Features
+
+- **Anonymous video chat** with random strangers via WebRTC peer-to-peer connections
+- **Real-time text chat** powered by Socket.io
+- **Responsive UI** that works on desktop and mobile devices
+- **Dark / Light theme** toggle support
+- **Media controls** — mute/unmute audio, toggle video on/off
+- **Skip and find a new partner** instantly
+- **Built with modern stack**: Next.js, React, TypeScript, Tailwind CSS
+
+## Tech Stack
+
+| Technology | Purpose |
+|-----------|---------|
+| [Next.js](https://nextjs.org/) | React framework (frontend) |
+| [React](https://react.dev/) | UI library |
+| [TypeScript](https://www.typescriptlang.org/) | Type safety |
+| [Tailwind CSS](https://tailwindcss.com/) | Styling |
+| [Socket.io](https://socket.io/) | Real-time signaling and messaging |
+| [WebRTC](https://webrtc.org/) | Peer-to-peer video/audio streaming |
+| [Express](https://expressjs.com/) | WebSocket signaling server |
+| [Lucide React](https://lucide.dev/) | Icons |
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) (v18+)
+- [Bun](https://bun.sh/) or npm/yarn/pnpm
+
+### Install dependencies
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+bun install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Run the app
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Start the Next.js development server:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+bun run dev
+```
 
-## Learn More
+Start the Socket.io signaling server (in a new terminal):
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+bun run socket
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Open [http://localhost:3000](http://localhost:3000) with your browser.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Development
 
-## Deploy on Vercel
+### Scripts
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| Command | Description |
+|---------|-------------|
+| `bun run dev` | Start Next.js dev server |
+| `bun run build` | Build for production |
+| `bun run start` | Start production server |
+| `bun run lint` | Run ESLint |
+| `bun run socket` | Start WebSocket signaling server |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Environment Variables
+
+Create a `.env.local` file:
+
+```env
+NEXT_PUBLIC_SOCKET_URL=http://localhost:8080
+```
+
+## Architecture
+
+```
+app/
+├── page.tsx        # Landing page
+├── chat/
+│   └── page.tsx    # Video chat room
+├── layout.tsx      # Root layout with theme provider
+└── globals.css     # Global styles
+components/
+├── theme-provider.tsx  # Dark / Light mode context
+└── theme-toggle.tsx    # Theme toggle button
+server.js           # Express + Socket.io signaling server
+```
+
+### How it works
+
+1. User opens `/chat` and grants camera/microphone permissions
+2. The frontend connects to the Socket.io signaling server
+3. Server pairs two waiting users into a room
+4. Peers exchange WebRTC offers/answers/ICE candidates via Socket.io
+5. Once connected, video/audio streams flow peer-to-peer
+6. Text messages are relayed through the Socket.io server
+
+## Deployment
+
+This app consists of two parts:
+
+1. **Next.js frontend** — deploy to Vercel, Netlify, or similar
+2. **Socket.io server** — deploy to Railway, Render, Fly.io, or a VPS
+
+Set `NEXT_PUBLIC_SOCKET_URL` to point to your deployed backend.
+
+## License
+
+MIT
