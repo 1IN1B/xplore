@@ -17,7 +17,7 @@ if (!port) {
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: "*", // Adjust this to your Next.js URL for security
+    origin: process.env.FRONTEND_URL || "*",
     methods: ["GET", "POST"],
   },
 });
