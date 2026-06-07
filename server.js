@@ -4,7 +4,11 @@ const { Server } = require("socket.io");
 const cors = require("cors");
 
 const app = express();
-app.use(cors()); // Allow Next.js to connect
+app.use(cors({
+  origin: process.env.FRONTEND_URL || "*",
+}));
+
+app.get("/health", (req, res) => res.send("OK"));
 
 const port = process.env.PORT;
 if (!port) {
