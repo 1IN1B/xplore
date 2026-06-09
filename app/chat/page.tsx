@@ -28,6 +28,7 @@ export default function ChatPage() {
 
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
+  const remoteContainerRef = useRef<HTMLDivElement>(null);
 
   const socketRef = useRef<Socket | null>(null);
   const peerRef = useRef<RTCPeerConnection | null>(null);
@@ -153,6 +154,21 @@ export default function ChatPage() {
     }
   };
 
+  const handleRemoteVideoLoaded = () => {
+    const video = remoteVideoRef.current;
+    const container = remoteContainerRef.current;
+    if (!video || !container) return;
+
+    const ratio = video.videoWidth / video.videoHeight;
+    if (ratio > 1) {
+      container.style.maxHeight = `${Math.min(window.innerHeight * 0.8, 720)}px`;
+      container.style.maxWidth = "none";
+    } else {
+      container.style.maxHeight = `${Math.min(window.innerHeight * 0.8, 720)}px`;
+      container.style.maxWidth = `${720 * ratio}px`;
+    }
+  };
+
   const toggleAudio = () => {
     if (localStreamRef.current) {
       const audioTrack = localStreamRef.current.getAudioTracks()[0];
@@ -205,13 +221,14 @@ export default function ChatPage() {
           <ThemeToggle />
         </div>
 
-        <div className="flex-1 relative bg-zinc-100 dark:bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-inner min-h-[50vh] md:min-h-0">
+        <div ref={remoteContainerRef} className="flex-1 relative bg-black rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-inner min-h-[50vh] md:min-h-0 mx-auto">
           {/* Remote Video */}
           <video
             ref={remoteVideoRef}
             autoPlay
             playsInline
-            className="w-full h-full object-cover"
+            onLoadedMetadata={handleRemoteVideoLoaded}
+            className="w-full h-full object-contain"
           />
           {status === "waiting" && (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 text-zinc-400">
@@ -227,7 +244,7 @@ export default function ChatPage() {
               autoPlay
               playsInline
               muted
-              className={cn("w-full h-full object-cover", !isVideoEnabled && "hidden")}
+              className={cn("w-full h-full object-contain", !isVideoEnabled && "hidden")}
             />
             {!isVideoEnabled && (
               <div className="absolute inset-0 flex items-center justify-center bg-zinc-800 text-white">
